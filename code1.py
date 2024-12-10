@@ -32,3 +32,26 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+import librosa
+import joblib
+import numpy as np
+
+# You should load the classifier and encoder here (if you're not passing them directly)
+clf = joblib.load('chicken_health_model.pkl')
+encoder = joblib.load('label_encoder.pkl')
+
+def extract_features(file_path):
+    # Extract audio features as done previously
+    y, sr = librosa.load(file_path)
+    # Feature extraction code, e.g., MFCCs, Chroma, etc.
+    features = librosa.feature.mfcc(y=y, sr=sr)
+    return features
+
+def predict_chicken_health(file_path):
+    features = extract_features(file_path)
+    features = features.reshape(1, -1)  # Reshape for prediction
+    prediction = clf.predict(features)
+    return encoder.inverse_transform(prediction)[0]
+
